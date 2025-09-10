@@ -30,12 +30,11 @@ MiniDB/
 │   ├── buffer_manager.py     # 缓存管理器
 │   ├── disk_manager.py       # 磁盘管理器
 │   └── storage_engine.py     # 存储引擎
-└── database/                  # 数据库系统模块
+└── database/                  # 数据库引擎模块
     ├── __init__.py
-    ├── execution_engine.py    # 执行引擎
-    ├── operators.py          # 执行算子
-    ├── system_catalog.py     # 系统目录
-    └── database.py           # 数据库核心类
+    ├── database_catalog.py    # 数据库目录管理
+    ├── query_executor.py      # 查询执行器
+    └── database_engine.py     # 数据库引擎核心
 ```
 
 ## 系统架构
@@ -52,24 +51,24 @@ MiniDB/
 - **磁盘管理器** (disk_manager.py): 处理磁盘I/O操作
 - **存储引擎** (storage_engine.py): 提供统一的存储接口
 
-### 3. 数据库系统 (database/)
-- **执行引擎** (execution_engine.py): 执行逻辑执行计划
-- **执行算子** (operators.py): CreateTable、Insert、SeqScan、Filter、Project等
-- **系统目录** (system_catalog.py): 管理数据库元数据
-- **数据库核心** (database.py): 整合各模块的主要接口
+### 3. 数据库引擎 (database/)
+- **数据库目录** (database_catalog.py): 管理表结构和元数据
+- **查询执行器** (query_executor.py): 执行SQL查询计划
+- **数据库引擎** (database_engine.py): 整合SQL编译器和存储引擎的主要接口
 
 ## 支持的SQL语句
 
-- `CREATE TABLE table_name(col1 type1, col2 type2, ...)`
-- `INSERT INTO table_name(col1, col2, ...) VALUES (val1, val2, ...)`
-- `SELECT col1, col2, ... FROM table_name [WHERE condition]`
-- `DELETE FROM table_name [WHERE condition]`
+- ✅ `CREATE TABLE table_name(col1 type1, col2 type2, ...)`
+- ✅ `INSERT INTO table_name VALUES (val1, val2, ...)`
+- ✅ `SELECT col1, col2, ... FROM table_name`
+- 🚧 `DELETE FROM table_name [WHERE condition]` (计划中)
+- 🚧 `UPDATE table_name SET col1=val1 WHERE condition` (计划中)
 
 ## 支持的数据类型
 
-- `INT`: 整型
-- `VARCHAR`: 变长字符串
-- `CHAR(n)`: 固定长度字符串
+- ✅ `INT`: 整型
+- ✅ `VARCHAR(n)`: 变长字符串（需指定长度）
+- 🚧 `CHAR(n)`: 固定长度字符串 (计划中)
 
 ## 运行方式
 
@@ -80,25 +79,30 @@ pip install -r requirements.txt
 # 运行主程序
 python main.py
 
-# 运行测试
-python -m pytest tests/
+# 运行数据库引擎测试
+python test_simple_database.py
+
+# 运行其他测试
+python test_sql_compiler.py      # SQL编译器测试
+python test_storage_engine.py    # 存储引擎测试
 ```
 
 ## 开发进度
 
-- [ ] SQL编译器
-  - [ ] 词法分析器
-  - [ ] 语法分析器
-  - [ ] 语义分析器
-  - [ ] 执行计划生成器
-- [ ] 存储系统
-  - [ ] 页面管理器
-  - [ ] 缓存管理器
-  - [ ] 存储引擎
-- [ ] 数据库系统
-  - [ ] 执行引擎
-  - [ ] 系统目录
-  - [ ] 数据库集成
+- ✅ **SQL编译器** (已完成)
+  - ✅ 词法分析器 - 支持SQL关键字和语法元素
+  - ✅ 语法分析器 - 构建完整AST
+  - ✅ 语义分析器 - 类型检查和表验证
+  - ✅ 执行计划生成器 - 生成执行计划树
+- ✅ **存储系统** (已完成)
+  - ✅ 页面管理器 - 4KB页面管理
+  - ✅ 缓存管理器 - LRU缓存策略
+  - ✅ 磁盘管理器 - 文件I/O操作
+  - ✅ 存储引擎 - 统一存储接口
+- ✅ **数据库引擎** (已完成)
+  - ✅ 数据库目录 - 元数据管理
+  - ✅ 查询执行器 - SQL执行管道
+  - ✅ 数据库引擎 - 系统集成
 
 ## 技术特点
 
